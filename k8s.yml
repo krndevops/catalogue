@@ -1,0 +1,93 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: catalogue
+  labels:
+    app: catalogue
+spec:
+  # modify replicas according to your case
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalogue
+  template:
+    metadata:
+      labels:
+        app: catalogue
+    spec:
+      initContainers:
+        - name: parameters-pull
+          image: docker.io/krn010/parameter-store-init-container-image
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+          env:
+            - name: PARAMS
+              value: "dev.roboshop.catalogue.MONGO_URL,MONGO_URL"
+      containers:
+        - name: catalogue
+          image: docker.io/krn010/catalogue
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "150Mi"
+              cpu: "100m"
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+
+      volumes:
+        - name: parameters
+          emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: catalogue-schema-load
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: parameters
+          emptyDir: {}
+      initContainers:
+        - name: parameters-pull
+          image: docker.io/krn010/parameter-store-init-container-image
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+          env:
+            - name: PARAMS
+              value: "dev.roboshop.docdb.username,DOCDB_USER dev.roboshop.docdb.password,DOCDB_PASS dev.roboshop.docdb.endpoint,DOCDB_ENDPOINT"
+      containers:
+        - name: schema-load
+          image: docker.io/krn010/schema-loader
+          imagePullPolicy: Always
+          env:
+            - name: COMPONENT
+              value: catalogue
+            - name: SCHEMA_TYPE
+              value: mongo
+          volumeMounts:
+            - mountPath: /parameters
+              name: parameters
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogue
+spec:
+  selector:
+    app: catalogue
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
