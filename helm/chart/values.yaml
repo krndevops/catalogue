@@ -1,0 +1,18 @@
+component: catalogue
+service:
+  port: 80
+  containerPort: 8080
+
+initContainers:
+  parameters_pull:
+    image: docker.io/krn010/parameter-store-init-container-image
+    imagePullPolicy: Always
+
+containers:
+  main:
+    image: docker.io/krn010/catalogue
+    imagePullPolicy: Always
+
+volumeMounts:
+  - name: parameters
+    mountPath: /parameters
