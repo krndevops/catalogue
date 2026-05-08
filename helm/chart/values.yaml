@@ -12,6 +12,9 @@ containers:
   main:
     image: docker.io/krn010/catalogue
     imagePullPolicy: Always
+  schema_loader:
+    image: docker.io/krn010/schema-loader
+    imagePullPolicy: Always
 
 volumeMounts:
   - name: parameters

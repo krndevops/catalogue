@@ -1,3 +1,6 @@
 env: dev
 replica: 2
 PARAMS: "dev.roboshop.catalogue.MONGO_URL,MONGO_URL"
+
+job:
+  PARAMS: "dev.roboshop.docdb.username,DOCDB_USER dev.roboshop.docdb.password,DOCDB_PASS dev.roboshop.docdb.endpoint,DOCDB_ENDPOINT"
