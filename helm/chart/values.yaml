@@ -6,15 +6,15 @@ service:
 
 initContainers:
   parameters_pull:
-    image: docker.io/krn010/parameter-store-init-container-image
+    image: 367241114876.dkr.ecr.us-east-1.amazonaws.com/default/parameter-store-init-container-image:1.0.0
     imagePullPolicy: Always
 
 containers:
   main:
-    image: docker.io/krn010/catalogue
+    image: 367241114876.dkr.ecr.us-east-1.amazonaws.com/default/catalogue:1.0.0
     imagePullPolicy: Always
   schema_loader:
-    image: docker.io/krn010/schema-loader
+    image: 367241114876.dkr.ecr.us-east-1.amazonaws.com/default/schema-loader:1.0.0
     imagePullPolicy: Always
 
 volumeMounts:
