@@ -6,6 +6,7 @@ spec:
   backoffLimit: 4
   template:
     spec:
+      serviceAccountName: "{{ .Values.component }}"
       restartPolicy: Never
       volumes:
         - name: parameters

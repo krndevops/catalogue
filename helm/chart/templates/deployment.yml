@@ -15,6 +15,7 @@ spec:
       labels:
         app: {{ .Values.component }}
     spec:
+      serviceAccountName: {{ .Values.component }}
       initContainers:
         - name: parameters-pull
           image: {{ .Values.initContainers.parameters_pull.image }}
